@@ -8,7 +8,19 @@ import os
 import pandas as pd
 
 #Función
-def send_email(send_email, password, recipients, subject, body="",dataframe=None, provider="gmail", attachments= None):
+def send_email(sender, password, recipients, subject, body="",dataframe=None, provider="gmail", attachments= None):
+    #Validaciones
+    if not sender:
+        raise ValueError("Es necesario un remitente")
+    if not password:
+        raise ValueError("Ingresa la App Password para poder enviar el correo")
+    if not recipients or not isinstance(recipients, list):
+        raise ValueError("Es necesario ingresar un correo receptor")
+    if not subject:
+        raise ValueError("El asunto no debe estar vacío")
+
+
+    
     #Opciones de servidor SMTP
     if provider.lower() == "gmail":
         smtp_server = "smtp.gmail.com"
@@ -23,7 +35,7 @@ def send_email(send_email, password, recipients, subject, body="",dataframe=None
     try:
         #Creación del mensaje
         message = MIMEMultipart()
-        message["From"] = send_email
+        message["From"] = sender
         message["To"] = ", ".join(recipients)
         message["Subject"] = subject
 
@@ -57,14 +69,14 @@ def send_email(send_email, password, recipients, subject, body="",dataframe=None
                     print(f'Archivo no encontrado: {file_path}')
 
         #Conexion  al servidor SMTP
-        server = smtplib.SMTP(smtp_server, port)
-        server.starttls() #Activación TLS Encryption
-        #Login
-        server.login(send_email, password)
-        #Enviar correo
-        server.sendmail(send_email, recipients, message.as_string())
-        #Cerrar conexion
-        server.quit()
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls() #Activación TLS Encryption
+            #Login
+            server.login(sender, password)
+            #Enviar correo
+            server.sendmail(sender, recipients, message.as_string())
+        #Cerrar conexion. Aplicando el with, hace el cierre de conexion automatico y seguro
+        #server.quit()
 
         #Mensaje de éxito
         print(f'Correo enviado con vía {provider.capitalize()}!')
