@@ -24,6 +24,6 @@ body = """
     </body>
 </html>
 """
-attachments = ["files/smtp.png"]
+attachments = ["files/smtp.png", "files/guia.pdf"]
 
 send_email(sender, password, recipients, subject, body, provider="gmail", attachments=attachments)
