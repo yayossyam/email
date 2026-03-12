@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart #Permite usar txt,html,img,etc
 
 #Función
 def send_email(send_email, password, recipients, subject, body):
-    smtp_server = "smtp.office365.com"
+    smtp_server = "smtp.gmail.com"
     port = 587
 
     #Protección de código
@@ -13,23 +13,24 @@ def send_email(send_email, password, recipients, subject, body):
         #Creación del mensaje
         message = MIMEMultipart()
         message["From"] = send_email
-        messaje["To"] = ", ".join(recipients)
+        message["To"] = ", ".join(recipients)
         message["Subject"] = subject
 
         #Cuerpo del mensaje
-        message.attach(MIMEText(body, "plain"))
+        message.attach(MIMEText(body, "html"))
 
-        #Conexión al servidor SMTP
+        #Conexion  al servidor SMTP
         server = smtplib.SMTP(smtp_server, port)
+
         server.starttls() #Activación TLS Encryption
 
         #Login
         server.login(send_email, password)
 
-        #Envio de correo
-        server.sendmail(send_email, recipients, messaje.as_string())
+        #Enviar correo
+        server.sendmail(send_email, recipients, message.as_string())
 
-        #Cierre de conexión
+        #Cerrar conexion
         server.quit()
 
         #Mensaje de éxito
