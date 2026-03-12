@@ -5,9 +5,10 @@ from email.mime.multipart import MIMEMultipart #Permite usar txt,html,img,etc
 from email.mime.base import MIMEBase 
 from email import encoders
 import os
+import pandas as pd
 
 #Función
-def send_email(send_email, password, recipients, subject, body, provider="gmail", attachments= None):
+def send_email(send_email, password, recipients, subject, body="",dataframe=None, provider="gmail", attachments= None):
     #Opciones de servidor SMTP
     if provider.lower() == "gmail":
         smtp_server = "smtp.gmail.com"
@@ -25,6 +26,16 @@ def send_email(send_email, password, recipients, subject, body, provider="gmail"
         message["From"] = send_email
         message["To"] = ", ".join(recipients)
         message["Subject"] = subject
+
+        #Insertar DataFrame en caso de existir
+        if dataframe is not None:
+            table_html = dataframe.to_html(index=False)
+
+            body += f"""
+                <br>
+                <h3>Reporte generado</h3>
+                {table_html}
+            """
 
         #Cuerpo del mensaje
         message.attach(MIMEText(body, "html"))

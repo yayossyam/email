@@ -1,4 +1,5 @@
 from email_service import send_email
+import pandas as pd
 
 
 sender = "y2776430@gmail.com"
@@ -7,11 +8,19 @@ password = "abiglmljfpnjhgmv" #Se debe generar una App Password Gmail.
 #password = "VJVLQPUGQL3N468HP8QU9CUVK"
 
 recipients = [
-    "yahirhernandezolivaress@gmail.com",
     "y2776430@outlook.com"
 ]
 
-subject = "Reporte de prueba - 12/03/22"
+subject = "Reporte de prueba con Pandas - 12/03/22"
+
+#DataFrame de prueba
+data = {
+    "Empleado": ["Juan", "Maria", "Carlos"],
+    "Ventas": [1200, 1500, 900],
+    "Departamento": ["Ventas", "Marketing", "Soporte"]
+}
+
+df = pd.DataFrame(data)
 
 body = """
 <html>
@@ -26,4 +35,4 @@ body = """
 """
 attachments = ["files/smtp.png", "files/guia.pdf"]
 
-send_email(sender, password, recipients, subject, body, provider="gmail", attachments=attachments)
+send_email(sender, password, recipients, subject, body, dataframe=df, provider="gmail", attachments=attachments)
