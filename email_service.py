@@ -2,10 +2,12 @@
 import smtplib #Se conecta al servidor del correo
 from email.mime.text import MIMEText #Genera el cuerpo del mensaje
 from email.mime.multipart import MIMEMultipart #Permite usar txt,html,img,etc
-from email.mime.base import MIMEBase 
-from email import encoders
+from email.mime.base import MIMEBase #Permite crear archivos pdf,excel,docx
+from email import encoders #Convierte archivos a base64, formato para enviar archivos por correo
 import os
 import pandas as pd
+from datetime import datetime
+import pytz
 
 #Función
 def send_email(sender, password, recipients, subject, body="",dataframe=None, provider="gmail", attachments= None):
@@ -19,6 +21,9 @@ def send_email(sender, password, recipients, subject, body="",dataframe=None, pr
     if not subject:
         raise ValueError("El asunto no debe estar vacío")
 
+
+    #Definir zona horaria
+    zona = pytz.timezone("America/Mexico_City")
 
     
     #Opciones de servidor SMTP
@@ -34,20 +39,36 @@ def send_email(sender, password, recipients, subject, body="",dataframe=None, pr
     #Protección de código
     try:
         #Creación del mensaje
-        message = MIMEMultipart()
+        message = MIMEMultipart() #Crea contenedor del correo
         message["From"] = sender
         message["To"] = ", ".join(recipients)
         message["Subject"] = subject
 
         #Insertar DataFrame en caso de existir
         if dataframe is not None:
+            #Convertir DataFrame a tabla HTML
             table_html = dataframe.to_html(index=False)
 
+            #Agrega la tabla en el cuerpo del correo
             body += f"""
                 <br>
                 <h3>Reporte generado</h3>
                 {table_html}
             """
+
+            #Generar Excel automáticamente
+            timestamp = datetime.now(zona).strftime("%d-%m-%Y_%H-%M-%S")
+            excel_file = f"files/reporte_{timestamp}.xlsx" #Nombre del excel
+
+            #Crea el archivo Excel
+            dataframe.to_excel(excel_file, index=False)
+
+            #Creamos lista de attachment en caso de no existir
+            if attachments is None:
+                attachments = []
+
+            #Se agrega el excel - attachment
+            attachments.append(excel_file)
 
         #Cuerpo del mensaje
         message.attach(MIMEText(body, "html"))

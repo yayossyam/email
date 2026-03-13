@@ -20,7 +20,8 @@ def enviar_correo():
     #password = "VJVLQPUGQL3N468HP8QU9CUVK"
 
     recipients = [
-        "y2776430@outlook.com"
+        "y2776430@outlook.com",
+        "practicasryd@palliser.ca"
     ]
 
     subject = "Reporte de prueba con Pandas - 12/03/22"
